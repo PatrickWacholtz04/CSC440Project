@@ -100,7 +100,7 @@ namespace CSC440Project
                     int course_num = reader.GetInt32(2);
                     int student_id = reader.GetInt32(3);
                     string student_name = reader.GetString(4);
-                    int student_grade = reader.GetInt32(5);
+                    string student_grade = reader.GetString(5);
 
                     dataGridView1.Rows.Add(crn, course_prefix, course_num, student_id, student_name, student_grade, "Edit", "Delete");
                 }
@@ -129,12 +129,31 @@ namespace CSC440Project
             try
             {
                 mySqlConnection.Open();
-                string sql = "SELECT g.crn, c.course_prefix, c.course_num, s.student_id, CONCAT(s.first_name, ' ', s.last_name) AS student_name, g.grade AS student_grade FROM grades g JOIN courses c ON g.crn = c.crn JOIN students s ON g.student_id = s.student_id where g.crn=@crn;";
+                string sql;
+
+                // Check if a CRN is entered
+                if (string.IsNullOrEmpty(TextBoxRecordsCRN.Text))
+                {
+                    // If no CRN entered, select all records
+                    sql = "SELECT g.crn, c.course_prefix, c.course_num, s.student_id, CONCAT(s.first_name, ' ', s.last_name) AS student_name, g.grade AS student_grade FROM grades g JOIN courses c ON g.crn = c.crn JOIN students s ON g.student_id = s.student_id;";
+                }
+                else
+                {
+                    // If CRN is entered, filter by the entered CRN
+                    sql = "SELECT g.crn, c.course_prefix, c.course_num, s.student_id, CONCAT(s.first_name, ' ', s.last_name) AS student_name, g.grade AS student_grade FROM grades g JOIN courses c ON g.crn = c.crn JOIN students s ON g.student_id = s.student_id WHERE g.crn=@crn;";
+                }
+
                 MySqlCommand cmd = new MySqlCommand(sql, mySqlConnection);
-                cmd.Parameters.AddWithValue("@crn", TextBoxRecordsCRN.Text);
+
+                // Add parameter only if CRN is entered
+                if (!string.IsNullOrEmpty(TextBoxRecordsCRN.Text))
+                {
+                    cmd.Parameters.AddWithValue("@crn", TextBoxRecordsCRN.Text);
+                }
+
                 MySqlDataReader reader = cmd.ExecuteReader();
 
-                // clear datagridview
+                // Clear datagridview
                 dataGridView1.Rows.Clear();
 
                 while (reader.Read())
@@ -144,7 +163,7 @@ namespace CSC440Project
                     int course_num = reader.GetInt32(2);
                     int student_id = reader.GetInt32(3);
                     string student_name = reader.GetString(4);
-                    int student_grade = reader.GetInt32(5);
+                    string student_grade = reader.GetString(5);
 
                     dataGridView1.Rows.Add(crn, course_prefix, course_num, student_id, student_name, student_grade, "Edit", "Delete");
                 }
@@ -159,6 +178,7 @@ namespace CSC440Project
                 mySqlConnection.Close();
             }
         }
+
 
 
         // Edit and Delete buttons for records table
