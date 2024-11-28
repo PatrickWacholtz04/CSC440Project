@@ -9,6 +9,7 @@ namespace CSC440Project
 
     public partial class Main : Form
     {
+        const string conn_string = "server=csitmariadb;user=student;database=csc340_db;password=Maroon@21?";
         public Main()
         {
             InitializeComponent();
@@ -29,7 +30,6 @@ namespace CSC440Project
                 {
                     string selectedPath = folderDialog.SelectedPath;
 
-                    string conn_string = "server=localhost;user=root;database=gradeDB";
                     Grade import_grades = new Grade(conn_string);
                     import_grades.ImportGrades(selectedPath);
 
@@ -67,7 +67,7 @@ namespace CSC440Project
 
 
             // Insert grade
-            Grade new_grade = new Grade("server=localhost;user=root;database=gradeDB");
+            Grade new_grade = new Grade(conn_string);
             new_grade.insertGrade(grade_int, student_id_int, crn_int);
 
 
@@ -80,13 +80,12 @@ namespace CSC440Project
         // --------------- Use Case 3+4: Util ---------------
         private void ButtonViewRecords_Click(object sender, EventArgs e)
         {
-            String conn_string = "server=localhost;user=root;database=gradeDB";
             MySqlConnection mySqlConnection = new MySqlConnection(conn_string);
 
             try
             {
                 mySqlConnection.Open();
-                string sql = "SELECT g.crn, c.course_prefix, c.course_num, s.student_id, CONCAT(s.first_name, ' ', s.last_name) AS student_name, g.grade AS student_grade FROM grades g JOIN courses c ON g.crn = c.crn JOIN students s ON g.student_id = s.student_id;";
+                string sql = "SELECT g.crn, c.course_prefix, c.course_num, s.student_id, CONCAT(s.first_name, ' ', s.last_name) AS student_name, g.grade AS student_grade FROM 440_jmp_grades g JOIN 440_jmp_courses c ON g.crn = c.crn JOIN 440_jmp_students s ON g.student_id = s.student_id;";
                 MySqlCommand cmd = new MySqlCommand(sql, mySqlConnection);
                 MySqlDataReader reader = cmd.ExecuteReader();
 
@@ -123,7 +122,6 @@ namespace CSC440Project
 
         private void ButtonViewCourseRecords_Click(object sender, EventArgs e)
         {
-            String conn_string = "server=localhost;user=root;database=gradeDB";
             MySqlConnection mySqlConnection = new MySqlConnection(conn_string);
 
             try
@@ -135,12 +133,12 @@ namespace CSC440Project
                 if (string.IsNullOrEmpty(TextBoxRecordsCRN.Text))
                 {
                     // If no CRN entered, select all records
-                    sql = "SELECT g.crn, c.course_prefix, c.course_num, s.student_id, CONCAT(s.first_name, ' ', s.last_name) AS student_name, g.grade AS student_grade FROM grades g JOIN courses c ON g.crn = c.crn JOIN students s ON g.student_id = s.student_id;";
+                    sql = "SELECT g.crn, c.course_prefix, c.course_num, s.student_id, CONCAT(s.first_name, ' ', s.last_name) AS student_name, g.grade AS student_grade FROM 440_jmp_grades g JOIN 440_jmp_courses c ON g.crn = c.crn JOIN 440_jmp_students s ON g.student_id = s.student_id;";
                 }
                 else
                 {
                     // If CRN is entered, filter by the entered CRN
-                    sql = "SELECT g.crn, c.course_prefix, c.course_num, s.student_id, CONCAT(s.first_name, ' ', s.last_name) AS student_name, g.grade AS student_grade FROM grades g JOIN courses c ON g.crn = c.crn JOIN students s ON g.student_id = s.student_id WHERE g.crn=@crn;";
+                    sql = "SELECT g.crn, c.course_prefix, c.course_num, s.student_id, CONCAT(s.first_name, ' ', s.last_name) AS student_name, g.grade AS student_grade FROM 440_jmp_grades g JOIN 440_jmp_courses c ON g.crn = c.crn JOIN 440_jmp_students s ON g.student_id = s.student_id WHERE g.crn=@crn;";
                 }
 
                 MySqlCommand cmd = new MySqlCommand(sql, mySqlConnection);
@@ -212,7 +210,7 @@ namespace CSC440Project
                     string studentId = dataGridView1.Rows[rowIndex].Cells["StudentID"].Value.ToString();
                     string crn = dataGridView1.Rows[rowIndex].Cells["CRN"].Value.ToString();
 
-                    Grade delete_grade = new Grade("server=localhost;user=root;database=gradeDB");
+                    Grade delete_grade = new Grade(conn_string);
                     delete_grade.deleteGrade(studentId, crn);
                 }
 
@@ -239,7 +237,7 @@ namespace CSC440Project
         // --------------- Use Case 5: Print Transcript ---------------
         private void ButtonPrintTranscript_Click(object sender, EventArgs e)
         {
-            PrintTranscript printTranscript = new PrintTranscript();
+            PrintTranscript printTranscript = new PrintTranscript(conn_string);
             printTranscript.ShowDialog();
         }
         // ------------------------------------------------------------
