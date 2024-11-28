@@ -132,7 +132,7 @@ namespace CSC440Project
                                     // use file/folder name to get crn
                                     try
                                     {
-                                        string crnSql = "SELECT crn FROM courses WHERE course_num=@course_num AND course_prefix=@course_prefix AND year=@year AND semester=@semester";
+                                        string crnSql = "SELECT crn FROM 440_jmp_courses WHERE course_num=@course_num AND course_prefix=@course_prefix AND year=@year AND semester=@semester";
                                         MySqlCommand crnCmd = new(crnSql, conn);
 
                                         crnCmd.Parameters.AddWithValue("@course_num", courseNum);
@@ -169,7 +169,7 @@ namespace CSC440Project
                                         // confirm student exists in db
                                         try
                                         {
-                                            string studSql = "SELECT * FROM students WHERE student_id=@student_id";
+                                            string studSql = "SELECT * FROM 440_jmp_students WHERE student_id=@student_id";
                                             MySqlCommand studCmd = new(studSql, conn);
 
                                             studCmd.Parameters.AddWithValue("@student_id", id);
@@ -188,7 +188,7 @@ namespace CSC440Project
                                                     myReader.Close();
                                                     try
                                                     {
-                                                        string insertSql = "INSERT INTO grades (grade, student_id, crn) VALUES (@grade, @student_id, @crn)";
+                                                        string insertSql = "INSERT INTO 440_jmp_grades (grade, student_id, crn) VALUES (@grade, @student_id, @crn)";
                                                         MySqlCommand insertCmd = new(insertSql, conn);
 
                                                         insertCmd.Parameters.AddWithValue("@grade", grade);
@@ -250,7 +250,7 @@ namespace CSC440Project
 
         public void editGrade(int gradeId, int newGrade)
         {
-            string query = "UPDATE grades SET grade = @new_grade WHERE grade_id = @grade_id";
+            string query = "UPDATE 440_jmp_grades SET grade = @new_grade WHERE grade_id = @grade_id";
 
             using (MySqlConnection conn = new MySqlConnection(this.conn_string))
             {
@@ -283,9 +283,8 @@ namespace CSC440Project
 
         public void deleteGrade(string studentId, string crn)
         {
-            string conn_string = "server = localhost; user = root; database = gradeDB";
             // Get grade id from grade info
-            string query = "SELECT grade_id FROM grades WHERE crn = @crn AND student_id = @student_id";
+            string query = "SELECT grade_id FROM 440_jmp_grades WHERE crn = @crn AND student_id = @student_id";
             using (MySqlConnection conn = new MySqlConnection(conn_string))
             {
                 try
@@ -301,7 +300,7 @@ namespace CSC440Project
                     // Use the grade id to delete the entry
 
                     // SQL query to delete the record where grade_id matches
-                    string sqlQuery = "DELETE FROM grades WHERE grade_id = @gradeId";
+                    string sqlQuery = "DELETE FROM 440_jmp_grades WHERE grade_id = @gradeId";
 
                     // Create command and add parameters to prevent SQL injection
                     MySqlCommand cmd_delete = new MySqlCommand(sqlQuery, conn);

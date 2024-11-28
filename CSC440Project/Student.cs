@@ -53,7 +53,11 @@ namespace CSC440Project
 
         public void PrintTranscript(int studentId)
         {
-            string filePath = "Transcript.pdf"; // Output file path
+            // determine root of project directory at runtime
+            string rootPath = AppContext.BaseDirectory;
+            string projectRoot = Path.GetFullPath(Path.Combine(rootPath, @"..\..\..\"));
+            string fileName = $"{studentId}_transcript.pdf";
+            string filePath = Path.Combine(projectRoot, $"transcripts\\{fileName}");
 
             // Create the document
             Document pdfDoc = new Document(PageSize.A4, 50, 50, 25, 25);
@@ -72,7 +76,7 @@ namespace CSC440Project
                     using var conn = new MySqlConnection(this.conn_string);
                     conn.Open();
 
-                    string studInfoSql = "SELECT first_name, last_name FROM students WHERE student_id=@student_id";
+                    string studInfoSql = "SELECT first_name, last_name FROM 440_jmp_students WHERE student_id=@student_id";
                     MySqlCommand studInfoCmd = new(studInfoSql, conn);
                     studInfoCmd.Parameters.AddWithValue("@student_id", studentId);
 
@@ -96,7 +100,7 @@ namespace CSC440Project
                     }
                     myReader.Close();
 
-                    string transcriptSql = "SELECT course_prefix, course_num, semester, year, hours, grade FROM courses INNER JOIN grades on courses.crn = grades.crn WHERE grades.student_id=@student_id";
+                    string transcriptSql = "SELECT course_prefix, course_num, semester, year, hours, grade FROM 440_jmp_courses INNER JOIN 440_jmp_grades on 440_jmp_courses.crn = 440_jmp_grades.crn WHERE 440_jmp_grades.student_id=@student_id";
                     MySqlCommand transcriptCmd = new(transcriptSql, conn);
 
                     transcriptCmd.Parameters.AddWithValue("@student_id", studentId);

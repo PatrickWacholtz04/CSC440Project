@@ -124,14 +124,4 @@ class ImportExport {
         }
         Console.WriteLine("Transcript PDF created at: " + filePath);
     }
-
-    //static void Main(string[] args) {
-    //    // Connection string
-    //    string connString = "Server=192.168.1.109;Database=gradeDB;User Id=mitch;Password=9Ffj0PrB4VW312q6;";
-
-    //    //ImportGrades(connString);
-
-    //    PrintTranscript(901770480, connString);
-    //}
-
 }
