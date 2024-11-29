@@ -113,6 +113,7 @@ namespace CSC440Project
 
                                 using var package = new ExcelPackage(new FileInfo(filePath));
 
+                                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
                                 var worksheet = package.Workbook.Worksheets[0]; // Access the first worksheet
                                 int rowCount = worksheet.Dimension.Rows;
 
@@ -197,27 +198,32 @@ namespace CSC440Project
 
                                                         insertCmd.ExecuteNonQuery();
                                                         Console.WriteLine("Insert Success!");
+                                                        MessageBox.Show("Insert Success!");
 
                                                     }
                                                     catch (Exception insertEx)
                                                     {
                                                         Console.WriteLine($"Insert for student {id} failed: {insertEx.Message}");
+                                                        MessageBox.Show($"Insert for student {id} failed: {insertEx.Message}");
                                                     }
                                                 }
                                                 else
                                                 {
                                                     Console.WriteLine($"Student name: {name} does not match {id} on record!");
+                                                    MessageBox.Show($"Student name: {name} does not match {id} on record!");
                                                 }
                                             }
                                             else
                                             {
                                                 Console.WriteLine($"Student ID: {id} does not exist!");
+                                                MessageBox.Show($"Student ID: {id} does not exist!");
                                             }
 
                                         }
                                         catch (Exception studEx)
                                         {
                                             Console.WriteLine($"Failed student query: {studEx.Message}");
+                                            MessageBox.Show($"Failed student query: {studEx.Message}");
                                         }
                                     }
                                     conn.Close();
