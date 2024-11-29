@@ -17,14 +17,15 @@ namespace CSC440Project
 {
     public partial class PrintTranscript : Form
     {
-        public PrintTranscript()
+        string conn_string;
+        public PrintTranscript(string conn_string)
         {
+            this.conn_string = conn_string;
             InitializeComponent();
         }
 
         private void ButtonPrint_Click(object sender, EventArgs e)
         {
-            string conn_string = "server=localhost;user=root;database=gradeDB";
             string student_id = TextBoxStudentID.Text;
 
             int student_id_int = Convert.ToInt32(student_id);
