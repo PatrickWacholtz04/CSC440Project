@@ -50,9 +50,9 @@ namespace CSC440Project
 
         public void ButtonSubmit_Click(object sender, EventArgs e)
         {
-            string conn_string = "server = localhost; user = root; database = gradeDB";
+            const string conn_string = "server=csitmariadb;user=student;database=csc340_db;password=Maroon@21?";
             // Get grade id from grade info
-            string query = "SELECT grade_id FROM grades WHERE crn = @crn AND student_id = @student_id";
+            string query = "SELECT grade_id FROM 440_jmp_grades WHERE crn = @crn AND student_id = @student_id";
             using (MySqlConnection conn = new MySqlConnection(conn_string))
             {
                 conn.Open();
@@ -62,7 +62,7 @@ namespace CSC440Project
 
                 var result = cmd.ExecuteScalar();
                 int grade_id = result != null ? Convert.ToInt32(result) : 0;
-                int new_grade = Convert.ToInt32( TextBoxStudentGrade.Text );
+                string new_grade = TextBoxStudentGrade.Text;
 
                 Grade edit_grade = new Grade(conn_string);
                 edit_grade.editGrade(grade_id, new_grade);

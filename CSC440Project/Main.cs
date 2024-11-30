@@ -15,7 +15,7 @@ namespace CSC440Project
             InitializeComponent();
             this.PanelAddGrade.Visible = false;
             this.PanelRecords.Visible = false;
-
+            this.PopulateComboBox();
         }
 
         // --------------- Use Case 1: Import Grades ---------------
@@ -129,29 +129,62 @@ namespace CSC440Project
                 mySqlConnection.Open();
                 string sql;
 
-                // Check if a CRN is entered
-                if (string.IsNullOrEmpty(TextBoxRecordsCRN.Text))
+                // Build the SQL query dynamically based on the inputs
+                if (string.IsNullOrEmpty(TextBoxRecordsCRN.Text) &&
+                    (ComboBoxViewStudent.SelectedItem == null || ComboBoxViewStudent.SelectedItem.ToString() == "All Students"))
                 {
-                    // If no CRN entered, select all records
-                    sql = "SELECT g.crn, c.course_prefix, c.course_num, s.student_id, CONCAT(s.first_name, ' ', s.last_name) AS student_name, g.grade AS student_grade FROM 440_jmp_grades g JOIN 440_jmp_courses c ON g.crn = c.crn JOIN 440_jmp_students s ON g.student_id = s.student_id;";
+                    // No filters: fetch all records
+                    sql = "SELECT g.crn, c.course_prefix, c.course_num, s.student_id, CONCAT(s.first_name, ' ', s.last_name) AS student_name, g.grade AS student_grade " +
+                          "FROM 440_jmp_grades g " +
+                          "JOIN 440_jmp_courses c ON g.crn = c.crn " +
+                          "JOIN 440_jmp_students s ON g.student_id = s.student_id";
+                }
+                else if (!string.IsNullOrEmpty(TextBoxRecordsCRN.Text) &&
+                         (ComboBoxViewStudent.SelectedItem == null || ComboBoxViewStudent.SelectedItem.ToString() == "All Students"))
+                {
+                    // Filter by CRN only
+                    sql = "SELECT g.crn, c.course_prefix, c.course_num, s.student_id, CONCAT(s.first_name, ' ', s.last_name) AS student_name, g.grade AS student_grade " +
+                          "FROM 440_jmp_grades g " +
+                          "JOIN 440_jmp_courses c ON g.crn = c.crn " +
+                          "JOIN 440_jmp_students s ON g.student_id = s.student_id " +
+                          "WHERE g.crn = @crn";
+                }
+                else if (string.IsNullOrEmpty(TextBoxRecordsCRN.Text) &&
+                         ComboBoxViewStudent.SelectedItem != null && ComboBoxViewStudent.SelectedItem.ToString() != "All Students")
+                {
+                    // Filter by student name only
+                    sql = "SELECT g.crn, c.course_prefix, c.course_num, s.student_id, CONCAT(s.first_name, ' ', s.last_name) AS student_name, g.grade AS student_grade " +
+                          "FROM 440_jmp_grades g " +
+                          "JOIN 440_jmp_courses c ON g.crn = c.crn " +
+                          "JOIN 440_jmp_students s ON g.student_id = s.student_id " +
+                          "WHERE CONCAT(s.first_name, ' ', s.last_name) = @student_name";
                 }
                 else
                 {
-                    // If CRN is entered, filter by the entered CRN
-                    sql = "SELECT g.crn, c.course_prefix, c.course_num, s.student_id, CONCAT(s.first_name, ' ', s.last_name) AS student_name, g.grade AS student_grade FROM 440_jmp_grades g JOIN 440_jmp_courses c ON g.crn = c.crn JOIN 440_jmp_students s ON g.student_id = s.student_id WHERE g.crn=@crn;";
+                    // Filter by both CRN and student name
+                    sql = "SELECT g.crn, c.course_prefix, c.course_num, s.student_id, CONCAT(s.first_name, ' ', s.last_name) AS student_name, g.grade AS student_grade " +
+                          "FROM 440_jmp_grades g " +
+                          "JOIN 440_jmp_courses c ON g.crn = c.crn " +
+                          "JOIN 440_jmp_students s ON g.student_id = s.student_id " +
+                          "WHERE g.crn = @crn AND CONCAT(s.first_name, ' ', s.last_name) = @student_name";
                 }
 
                 MySqlCommand cmd = new MySqlCommand(sql, mySqlConnection);
 
-                // Add parameter only if CRN is entered
+                // Add parameters dynamically based on the inputs
                 if (!string.IsNullOrEmpty(TextBoxRecordsCRN.Text))
                 {
                     cmd.Parameters.AddWithValue("@crn", TextBoxRecordsCRN.Text);
                 }
 
+                if (ComboBoxViewStudent.SelectedItem != null && ComboBoxViewStudent.SelectedItem.ToString() != "All Students")
+                {
+                    cmd.Parameters.AddWithValue("@student_name", ComboBoxViewStudent.SelectedItem.ToString());
+                }
+
                 MySqlDataReader reader = cmd.ExecuteReader();
 
-                // Clear datagridview
+                // Clear the DataGridView
                 dataGridView1.Rows.Clear();
 
                 while (reader.Read())
@@ -165,7 +198,6 @@ namespace CSC440Project
 
                     dataGridView1.Rows.Add(crn, course_prefix, course_num, student_id, student_name, student_grade, "Edit", "Delete");
                 }
-
             }
             catch (Exception ex)
             {
@@ -176,6 +208,8 @@ namespace CSC440Project
                 mySqlConnection.Close();
             }
         }
+
+
 
 
 
@@ -218,6 +252,48 @@ namespace CSC440Project
             }
 
         }
+
+        // Populate combo box with student names
+        private void PopulateComboBox()
+        {
+            MySqlConnection mySqlConnection = new MySqlConnection(conn_string);
+
+            try
+            {
+                mySqlConnection.Open();
+
+                // Query to get all students' names
+                string sql = "SELECT CONCAT(first_name, ' ', last_name) AS student_name FROM 440_jmp_students;";
+                MySqlCommand cmd = new MySqlCommand(sql, mySqlConnection);
+                MySqlDataReader reader = cmd.ExecuteReader();
+
+                // Clear the ComboBox first (to avoid duplicates on multiple calls)
+                ComboBoxViewStudent.Items.Clear();
+
+                // Add "All Students" as the default option
+                ComboBoxViewStudent.Items.Add("All Students");
+
+                // Populate ComboBox with student names from the database
+                while (reader.Read())
+                {
+                    string studentName = reader.GetString("student_name");
+                    ComboBoxViewStudent.Items.Add(studentName);
+                }
+
+                // Set the default selected value
+                ComboBoxViewStudent.SelectedItem = "All Students";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error: {ex.Message}");
+            }
+            finally
+            {
+                mySqlConnection.Close();
+            }
+        }
+
+
         // -------------------------------------------------
 
 
@@ -259,6 +335,14 @@ namespace CSC440Project
 
         }
 
-        
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void TextBoxRecordsCRN_TextChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

@@ -254,7 +254,7 @@ namespace CSC440Project
         }
 
 
-        public void editGrade(int gradeId, int newGrade)
+        public void editGrade(int gradeId, string newGrade)
         {
             string query = "UPDATE 440_jmp_grades SET grade = @new_grade WHERE grade_id = @grade_id";
 
@@ -283,6 +283,7 @@ namespace CSC440Project
                 catch (Exception ex)
                 {
                     Console.WriteLine("Error: " + ex.Message);
+                    MessageBox.Show("error:, " + ex.Message);
                 }
             }
         }

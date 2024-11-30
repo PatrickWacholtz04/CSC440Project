@@ -41,6 +41,8 @@
             this.LabelStudentID = new System.Windows.Forms.Label();
             this.ButtonViewRecords = new System.Windows.Forms.Button();
             this.PanelRecords = new System.Windows.Forms.Panel();
+            this.LabelViewStudentRecords = new System.Windows.Forms.Label();
+            this.ComboBoxViewStudent = new System.Windows.Forms.ComboBox();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.CRN = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.CoursePrefix = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -175,6 +177,8 @@
             // 
             // PanelRecords
             // 
+            this.PanelRecords.Controls.Add(this.LabelViewStudentRecords);
+            this.PanelRecords.Controls.Add(this.ComboBoxViewStudent);
             this.PanelRecords.Controls.Add(this.dataGridView1);
             this.PanelRecords.Controls.Add(this.ButtonViewCourseRecords);
             this.PanelRecords.Controls.Add(this.TextBoxRecordsCRN);
@@ -184,6 +188,26 @@
             this.PanelRecords.Name = "PanelRecords";
             this.PanelRecords.Size = new System.Drawing.Size(665, 462);
             this.PanelRecords.TabIndex = 4;
+            // 
+            // LabelViewStudentRecords
+            // 
+            this.LabelViewStudentRecords.AutoSize = true;
+            this.LabelViewStudentRecords.Location = new System.Drawing.Point(178, 57);
+            this.LabelViewStudentRecords.Name = "LabelViewStudentRecords";
+            this.LabelViewStudentRecords.Size = new System.Drawing.Size(51, 15);
+            this.LabelViewStudentRecords.TabIndex = 19;
+            this.LabelViewStudentRecords.Text = "Student:";
+            this.LabelViewStudentRecords.Click += new System.EventHandler(this.label1_Click);
+            // 
+            // ComboBoxViewStudent
+            // 
+            this.ComboBoxViewStudent.FormattingEnabled = true;
+            this.ComboBoxViewStudent.Items.AddRange(new object[] {
+            "All Students"});
+            this.ComboBoxViewStudent.Location = new System.Drawing.Point(235, 54);
+            this.ComboBoxViewStudent.Name = "ComboBoxViewStudent";
+            this.ComboBoxViewStudent.Size = new System.Drawing.Size(121, 23);
+            this.ComboBoxViewStudent.TabIndex = 18;
             // 
             // dataGridView1
             // 
@@ -255,7 +279,7 @@
             this.ButtonViewCourseRecords.Name = "ButtonViewCourseRecords";
             this.ButtonViewCourseRecords.Size = new System.Drawing.Size(143, 23);
             this.ButtonViewCourseRecords.TabIndex = 16;
-            this.ButtonViewCourseRecords.Text = "View Course Records";
+            this.ButtonViewCourseRecords.Text = "View Records";
             this.ButtonViewCourseRecords.UseVisualStyleBackColor = true;
             this.ButtonViewCourseRecords.Click += new System.EventHandler(this.ButtonViewCourseRecords_Click);
             // 
@@ -265,6 +289,7 @@
             this.TextBoxRecordsCRN.Name = "TextBoxRecordsCRN";
             this.TextBoxRecordsCRN.Size = new System.Drawing.Size(103, 23);
             this.TextBoxRecordsCRN.TabIndex = 15;
+            this.TextBoxRecordsCRN.TextChanged += new System.EventHandler(this.TextBoxRecordsCRN_TextChanged);
             // 
             // LabelRecordsCRN
             // 
@@ -346,5 +371,7 @@
         private DataGridViewButtonColumn EditRow;
         private DataGridViewButtonColumn DeleteRow;
         private Button ButtonPrintTranscript;
+        private Label LabelViewStudentRecords;
+        private ComboBox ComboBoxViewStudent;
     }
 }
