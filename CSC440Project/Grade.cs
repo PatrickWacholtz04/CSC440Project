@@ -148,7 +148,6 @@ namespace CSC440Project
                                             crn = Convert.ToInt32(myReader["crn"]);
                                             Console.WriteLine($"CRN: {crn}");
                                         }
-
                                     }
                                     catch (Exception crnEx)
                                     {
@@ -162,10 +161,6 @@ namespace CSC440Project
                                         string grade = worksheet.Cells[row, 3].Text;
 
                                         importedGrades.Rows.Add(name, id, grade);
-
-                                        // write imported data to console for testing
-                                        // REMOVE OR COMMENT OUT BEFORE SUBMISSION
-                                        Console.WriteLine($"Name: {name}, ID: {id}, Grade: {grade}");
 
                                         // confirm student exists in db
                                         try
