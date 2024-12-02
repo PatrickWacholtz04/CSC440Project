@@ -35,7 +35,7 @@ namespace CSC440Project
                 Console.WriteLine("Connecting to MySQL...");
 
                 // Check if the grade already exists for this student and class
-                string checkQuery = "SELECT COUNT(*) FROM grades WHERE student_id = @student_id AND crn = @crn";
+                string checkQuery = "SELECT COUNT(*) FROM 440_jmp_grades WHERE student_id = @student_id AND crn = @crn";
                 MySqlCommand checkCmd = new MySqlCommand(checkQuery, conn);
                 checkCmd.Parameters.AddWithValue("@student_id", student_id);
                 checkCmd.Parameters.AddWithValue("@crn", crn);
@@ -50,7 +50,7 @@ namespace CSC440Project
                 else
                 {
                     // If the record does not exist, insert a new record
-                    string sqlQuery = "INSERT INTO grades(crn, student_id, grade) VALUES (@crn, @student_id, @grade)";
+                    string sqlQuery = "INSERT INTO 440_jmp_grades(crn, student_id, grade) VALUES (@crn, @student_id, @grade)";
                     MySqlCommand cmd = new MySqlCommand(sqlQuery, conn);
                     cmd.Parameters.AddWithValue("@grade", grade);
                     cmd.Parameters.AddWithValue("@student_id", student_id);
@@ -64,7 +64,7 @@ namespace CSC440Project
             catch (Exception ex)
             {
                 Console.WriteLine("Error: " + ex.ToString());
-                MessageBox.Show("An error occurred while processing the request.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("An error occurred while processing the request. ", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
             {
