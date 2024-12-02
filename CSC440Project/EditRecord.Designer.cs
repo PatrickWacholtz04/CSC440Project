@@ -28,131 +28,131 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.LabelEditRecord = new System.Windows.Forms.Label();
-            this.LabelCRN = new System.Windows.Forms.Label();
-            this.LabelStudentID = new System.Windows.Forms.Label();
-            this.LabelStudentGrade = new System.Windows.Forms.Label();
-            this.LabelStudentName = new System.Windows.Forms.Label();
-            this.TextBoxStudentGrade = new System.Windows.Forms.TextBox();
-            this.LabelCRNValue = new System.Windows.Forms.Label();
-            this.LabelStudentIDValue = new System.Windows.Forms.Label();
-            this.LabelStudentNameValue = new System.Windows.Forms.Label();
-            this.ButtonSubmit = new System.Windows.Forms.Button();
-            this.SuspendLayout();
+            LabelEditRecord = new Label();
+            LabelCRN = new Label();
+            LabelStudentID = new Label();
+            LabelStudentGrade = new Label();
+            LabelStudentName = new Label();
+            TextBoxStudentGrade = new TextBox();
+            LabelCRNValue = new Label();
+            LabelStudentIDValue = new Label();
+            LabelStudentNameValue = new Label();
+            ButtonSubmit = new Button();
+            SuspendLayout();
             // 
             // LabelEditRecord
             // 
-            this.LabelEditRecord.AutoSize = true;
-            this.LabelEditRecord.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Bold);
-            this.LabelEditRecord.Location = new System.Drawing.Point(10, 12);
-            this.LabelEditRecord.Name = "LabelEditRecord";
-            this.LabelEditRecord.Size = new System.Drawing.Size(125, 30);
-            this.LabelEditRecord.TabIndex = 0;
-            this.LabelEditRecord.Text = "Edit Record";
-            this.LabelEditRecord.Click += new System.EventHandler(this.label1_Click);
+            LabelEditRecord.AutoSize = true;
+            LabelEditRecord.Font = new Font("Segoe UI", 15.75F, FontStyle.Bold);
+            LabelEditRecord.Location = new Point(10, 12);
+            LabelEditRecord.Name = "LabelEditRecord";
+            LabelEditRecord.Size = new Size(125, 30);
+            LabelEditRecord.TabIndex = 0;
+            LabelEditRecord.Text = "Edit Record";
+            LabelEditRecord.Click += label1_Click;
             // 
             // LabelCRN
             // 
-            this.LabelCRN.AutoSize = true;
-            this.LabelCRN.Location = new System.Drawing.Point(12, 62);
-            this.LabelCRN.Name = "LabelCRN";
-            this.LabelCRN.Size = new System.Drawing.Size(34, 15);
-            this.LabelCRN.TabIndex = 1;
-            this.LabelCRN.Text = "CRN:";
+            LabelCRN.AutoSize = true;
+            LabelCRN.Location = new Point(12, 62);
+            LabelCRN.Name = "LabelCRN";
+            LabelCRN.Size = new Size(34, 15);
+            LabelCRN.TabIndex = 1;
+            LabelCRN.Text = "CRN:";
             // 
             // LabelStudentID
             // 
-            this.LabelStudentID.AutoSize = true;
-            this.LabelStudentID.Location = new System.Drawing.Point(12, 88);
-            this.LabelStudentID.Name = "LabelStudentID";
-            this.LabelStudentID.Size = new System.Drawing.Size(65, 15);
-            this.LabelStudentID.TabIndex = 10;
-            this.LabelStudentID.Text = "Student ID:";
-            this.LabelStudentID.Click += new System.EventHandler(this.label4_Click);
+            LabelStudentID.AutoSize = true;
+            LabelStudentID.Location = new Point(12, 88);
+            LabelStudentID.Name = "LabelStudentID";
+            LabelStudentID.Size = new Size(65, 15);
+            LabelStudentID.TabIndex = 10;
+            LabelStudentID.Text = "Student ID:";
+            LabelStudentID.Click += label4_Click;
             // 
             // LabelStudentGrade
             // 
-            this.LabelStudentGrade.AutoSize = true;
-            this.LabelStudentGrade.Location = new System.Drawing.Point(12, 146);
-            this.LabelStudentGrade.Name = "LabelStudentGrade";
-            this.LabelStudentGrade.Size = new System.Drawing.Size(85, 15);
-            this.LabelStudentGrade.TabIndex = 11;
-            this.LabelStudentGrade.Text = "Student Grade:";
+            LabelStudentGrade.AutoSize = true;
+            LabelStudentGrade.Location = new Point(12, 146);
+            LabelStudentGrade.Name = "LabelStudentGrade";
+            LabelStudentGrade.Size = new Size(85, 15);
+            LabelStudentGrade.TabIndex = 11;
+            LabelStudentGrade.Text = "Student Grade:";
             // 
             // LabelStudentName
             // 
-            this.LabelStudentName.AutoSize = true;
-            this.LabelStudentName.Location = new System.Drawing.Point(12, 117);
-            this.LabelStudentName.Name = "LabelStudentName";
-            this.LabelStudentName.Size = new System.Drawing.Size(86, 15);
-            this.LabelStudentName.TabIndex = 12;
-            this.LabelStudentName.Text = "Student Name:";
+            LabelStudentName.AutoSize = true;
+            LabelStudentName.Location = new Point(12, 117);
+            LabelStudentName.Name = "LabelStudentName";
+            LabelStudentName.Size = new Size(86, 15);
+            LabelStudentName.TabIndex = 12;
+            LabelStudentName.Text = "Student Name:";
             // 
             // TextBoxStudentGrade
             // 
-            this.TextBoxStudentGrade.Location = new System.Drawing.Point(125, 146);
-            this.TextBoxStudentGrade.Name = "TextBoxStudentGrade";
-            this.TextBoxStudentGrade.Size = new System.Drawing.Size(100, 23);
-            this.TextBoxStudentGrade.TabIndex = 13;
-            this.TextBoxStudentGrade.Text = "student_grade";
+            TextBoxStudentGrade.Location = new Point(125, 146);
+            TextBoxStudentGrade.Name = "TextBoxStudentGrade";
+            TextBoxStudentGrade.Size = new Size(100, 23);
+            TextBoxStudentGrade.TabIndex = 13;
+            TextBoxStudentGrade.Text = "student_grade";
             // 
             // LabelCRNValue
             // 
-            this.LabelCRNValue.AutoSize = true;
-            this.LabelCRNValue.Location = new System.Drawing.Point(125, 62);
-            this.LabelCRNValue.Name = "LabelCRNValue";
-            this.LabelCRNValue.Size = new System.Drawing.Size(24, 15);
-            this.LabelCRNValue.TabIndex = 14;
-            this.LabelCRNValue.Text = "crn";
+            LabelCRNValue.AutoSize = true;
+            LabelCRNValue.Location = new Point(125, 62);
+            LabelCRNValue.Name = "LabelCRNValue";
+            LabelCRNValue.Size = new Size(24, 15);
+            LabelCRNValue.TabIndex = 14;
+            LabelCRNValue.Text = "crn";
             // 
             // LabelStudentIDValue
             // 
-            this.LabelStudentIDValue.AutoSize = true;
-            this.LabelStudentIDValue.Location = new System.Drawing.Point(125, 88);
-            this.LabelStudentIDValue.Name = "LabelStudentIDValue";
-            this.LabelStudentIDValue.Size = new System.Drawing.Size(62, 15);
-            this.LabelStudentIDValue.TabIndex = 17;
-            this.LabelStudentIDValue.Text = "student_id";
+            LabelStudentIDValue.AutoSize = true;
+            LabelStudentIDValue.Location = new Point(125, 88);
+            LabelStudentIDValue.Name = "LabelStudentIDValue";
+            LabelStudentIDValue.Size = new Size(62, 15);
+            LabelStudentIDValue.TabIndex = 17;
+            LabelStudentIDValue.Text = "student_id";
             // 
             // LabelStudentNameValue
             // 
-            this.LabelStudentNameValue.AutoSize = true;
-            this.LabelStudentNameValue.Location = new System.Drawing.Point(125, 117);
-            this.LabelStudentNameValue.Name = "LabelStudentNameValue";
-            this.LabelStudentNameValue.Size = new System.Drawing.Size(82, 15);
-            this.LabelStudentNameValue.TabIndex = 18;
-            this.LabelStudentNameValue.Text = "student_name";
+            LabelStudentNameValue.AutoSize = true;
+            LabelStudentNameValue.Location = new Point(125, 117);
+            LabelStudentNameValue.Name = "LabelStudentNameValue";
+            LabelStudentNameValue.Size = new Size(82, 15);
+            LabelStudentNameValue.TabIndex = 18;
+            LabelStudentNameValue.Text = "student_name";
             // 
             // ButtonSubmit
             // 
-            this.ButtonSubmit.Location = new System.Drawing.Point(12, 184);
-            this.ButtonSubmit.Name = "ButtonSubmit";
-            this.ButtonSubmit.Size = new System.Drawing.Size(213, 29);
-            this.ButtonSubmit.TabIndex = 19;
-            this.ButtonSubmit.Text = "Submit";
-            this.ButtonSubmit.UseVisualStyleBackColor = true;
-            this.ButtonSubmit.Click += new System.EventHandler(this.ButtonSubmit_Click);
+            ButtonSubmit.Location = new Point(12, 184);
+            ButtonSubmit.Name = "ButtonSubmit";
+            ButtonSubmit.Size = new Size(213, 29);
+            ButtonSubmit.TabIndex = 19;
+            ButtonSubmit.Text = "Submit";
+            ButtonSubmit.UseVisualStyleBackColor = true;
+            ButtonSubmit.Click += ButtonSubmit_Click;
             // 
             // EditRecord
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(238, 225);
-            this.Controls.Add(this.ButtonSubmit);
-            this.Controls.Add(this.LabelStudentNameValue);
-            this.Controls.Add(this.LabelStudentIDValue);
-            this.Controls.Add(this.LabelCRNValue);
-            this.Controls.Add(this.TextBoxStudentGrade);
-            this.Controls.Add(this.LabelStudentName);
-            this.Controls.Add(this.LabelStudentGrade);
-            this.Controls.Add(this.LabelStudentID);
-            this.Controls.Add(this.LabelCRN);
-            this.Controls.Add(this.LabelEditRecord);
-            this.Name = "EditRecord";
-            this.Text = "EditRecord";
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(238, 225);
+            Controls.Add(ButtonSubmit);
+            Controls.Add(LabelStudentNameValue);
+            Controls.Add(LabelStudentIDValue);
+            Controls.Add(LabelCRNValue);
+            Controls.Add(TextBoxStudentGrade);
+            Controls.Add(LabelStudentName);
+            Controls.Add(LabelStudentGrade);
+            Controls.Add(LabelStudentID);
+            Controls.Add(LabelCRN);
+            Controls.Add(LabelEditRecord);
+            Name = "EditRecord";
+            StartPosition = FormStartPosition.CenterParent;
+            Text = "EditRecord";
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
