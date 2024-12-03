@@ -236,8 +236,13 @@ namespace CSC440Project
                 else if (!string.IsNullOrEmpty(TextBoxRecordsCRN.Text) &&
                          (ComboBoxViewStudent.SelectedItem == null || ComboBoxViewStudent.SelectedItem.ToString() == "All Students"))
                 { 
-                    crn_filter = TextBoxRecordsCRN.Text;
-                    DisplayGradeRecords(crn_filter: crn_filter);
+                    if (int.TryParse(TextBoxRecordsCRN.Text, out int crn_int)) {
+                        crn_filter = TextBoxRecordsCRN.Text;
+                        DisplayGradeRecords(crn_filter: crn_filter);
+                    } else {
+                        TextBoxRecordsCRN.Text = "";
+                        throw new Exception("Invalid CRN entry!!");
+                    }
                 }
                 else if (string.IsNullOrEmpty(TextBoxRecordsCRN.Text) &&
                          ComboBoxViewStudent.SelectedItem != null && ComboBoxViewStudent.SelectedItem.ToString() != "All Students")
@@ -246,9 +251,9 @@ namespace CSC440Project
                     DisplayGradeRecords(student_name_filter: student_name_filter);
                 }
                 else
-                {  
+                {
                     crn_filter = TextBoxRecordsCRN.Text;
-                    student_name_filter = ComboBoxViewStudent.SelectedItem.ToString();
+                    student_name_filter = ComboBoxViewStudent.SelectedItem?.ToString() ?? "";
                     DisplayGradeRecords(crn_filter: crn_filter, student_name_filter: student_name_filter);
                 }
 
