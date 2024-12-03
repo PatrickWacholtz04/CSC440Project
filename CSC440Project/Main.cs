@@ -60,16 +60,71 @@ namespace CSC440Project
             string crn = TextBoxCRN.Text;
 
             // Input validation
-            int grade_int, student_id_int, crn_int;
-            bool grade_is_numerical = int.TryParse(grade, out grade_int);
+            string[] grade_options = {"A", "B", "C", "D", "F", "FN", "W"};
+            int student_id_int, crn_int;
             bool student_id_is_numerical = int.TryParse(student_id, out student_id_int);
             bool crn_is_numerical = int.TryParse(crn, out crn_int);
+            bool valid_grade = grade_options.Contains(grade);
+            bool student_exists = false;
+            bool crn_exists = false;
 
+            MySqlConnection mySqlConnection = new(conn_string);
+            try {
+                mySqlConnection.Open();
+                
+                // confirm student exists
+                if (student_id_is_numerical) {
+                    MySqlCommand studCmd;
+                    string studSql = "SELECT * FROM 440_jmp_students WHERE student_id=@student_id";
+                    studCmd = new(studSql, mySqlConnection);
+                    studCmd.Parameters.AddWithValue("@student_id", student_id_int);
+
+                    using MySqlDataReader studReader = studCmd.ExecuteReader();
+
+                    if (studReader.Read()) {
+                        student_exists = true;
+                    }
+                }
+
+                // confirm course exists
+                if (crn_is_numerical) {
+                    MySqlCommand crnCmd;
+                    string crnSql = "SELECT * FROM 440_jmp_courses WHERE crn=@crn";
+                    crnCmd = new(crnSql, mySqlConnection);
+                    crnCmd.Parameters.AddWithValue("@crn", crn_int);
+
+                    using MySqlDataReader crnReader = crnCmd.ExecuteReader();
+
+                    if (crnReader.Read()) {
+                        crn_exists = true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            finally
+            {
+                mySqlConnection.Close();
+            }
 
             // Insert grade
             Grade new_grade = new Grade(conn_string);
-            new_grade.insertGrade(grade_int, student_id_int, crn_int);
-
+            if (valid_grade && student_exists && crn_exists) {
+                new_grade.insertGrade(grade, student_id_int, crn_int);
+                
+                TextBoxStudentID.Text = "";
+                TextBoxStudentGrade.Text = "";
+                TextBoxCRN.Text = "";
+            } else {
+                if (!valid_grade)
+                    MessageBox.Show("Invalid Grade!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (!student_exists)
+                    MessageBox.Show("Student ID doesn't exist in database!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (!crn_exists)
+                    MessageBox.Show("CRN doesn't exist in database!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
 
             //MessageBox.Show("A record already exists for this Student and Class.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             //MessageBox.Show("The Student's record has been updated.", "Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -79,7 +134,6 @@ namespace CSC440Project
 
         // function to display grade records in dataGridView
         private void DisplayGradeRecords(
-            string sql = "SELECT g.crn, c.course_prefix, c.course_num, s.student_id, CONCAT(s.first_name, ' ', s.last_name) AS student_name, g.grade AS student_grade FROM 440_jmp_grades g JOIN 440_jmp_courses c ON g.crn = c.crn JOIN 440_jmp_students s ON g.student_id = s.student_id;",
             string? crn_filter = null,
             string? student_name_filter = null
             ) {
@@ -88,16 +142,42 @@ namespace CSC440Project
             try
             {
                 mySqlConnection.Open();
-                MySqlCommand cmd = new(sql, mySqlConnection);
+                MySqlCommand cmd;
+                string sql;
 
-                // Add parameters dynamically based on the inputs
-                if (crn_filter != null)
+                // Build the SQL query dynamically based on the inputs
+                if (crn_filter == null && student_name_filter == null) {
+                    sql = "SELECT g.crn, c.course_prefix, c.course_num, s.student_id, CONCAT(s.first_name, ' ', s.last_name) AS student_name, g.grade AS student_grade " +
+                          "FROM 440_jmp_grades g JOIN 440_jmp_courses c ON g.crn = c.crn JOIN 440_jmp_students s ON g.student_id = s.student_id;";
+                    cmd = new(sql, mySqlConnection);
+                }
+                else if (crn_filter != null && student_name_filter == null)
                 {
+                    // Filter by CRN only
+                    sql = "SELECT g.crn, c.course_prefix, c.course_num, s.student_id, CONCAT(s.first_name, ' ', s.last_name) AS student_name, g.grade AS student_grade " +
+                          "FROM 440_jmp_grades g JOIN 440_jmp_courses c ON g.crn = c.crn JOIN 440_jmp_students s ON g.student_id = s.student_id WHERE g.crn = @crn";
+
+                    cmd = new(sql, mySqlConnection);
                     cmd.Parameters.AddWithValue("@crn", crn_filter);
                 }
-                if (student_name_filter != null)
+                else if (crn_filter == null && student_name_filter != null)
                 {
+                    // Filter by student name only
+                    sql = "SELECT g.crn, c.course_prefix, c.course_num, s.student_id, CONCAT(s.first_name, ' ', s.last_name) AS student_name, g.grade AS student_grade " +
+                          "FROM 440_jmp_grades g JOIN 440_jmp_courses c ON g.crn = c.crn JOIN 440_jmp_students s ON g.student_id = s.student_id WHERE CONCAT(s.first_name, ' ', s.last_name) = @student_name";
+
+                    cmd = new(sql, mySqlConnection);
                     cmd.Parameters.AddWithValue("@student_name", student_name_filter);
+                }
+                else
+                {
+                    // Filter by both CRN and student name
+                    sql = "SELECT g.crn, c.course_prefix, c.course_num, s.student_id, CONCAT(s.first_name, ' ', s.last_name) AS student_name, g.grade AS student_grade " +
+                          "FROM 440_jmp_grades g JOIN 440_jmp_courses c ON g.crn = c.crn JOIN 440_jmp_students s ON g.student_id = s.student_id WHERE g.crn = @crn AND CONCAT(s.first_name, ' ', s.last_name) = @student_name";
+                          
+                    cmd = new(sql, mySqlConnection);
+                    cmd.Parameters.AddWithValue("@crn", crn_filter);
+                    cmd.Parameters.AddWithValue("@student_name_filter", student_name_filter);
                 }
 
 
@@ -144,7 +224,6 @@ namespace CSC440Project
             try
             {
                 mySqlConnection.Open();
-                string sql;
                 string? crn_filter, student_name_filter;
 
                 // Build the SQL query dynamically based on the inputs
@@ -152,53 +231,25 @@ namespace CSC440Project
                     (ComboBoxViewStudent.SelectedItem == null || ComboBoxViewStudent.SelectedItem.ToString() == "All Students"))
                 {
                     // No filters: fetch all records
-                    sql = "SELECT g.crn, c.course_prefix, c.course_num, s.student_id, CONCAT(s.first_name, ' ', s.last_name) AS student_name, g.grade AS student_grade " +
-                          "FROM 440_jmp_grades g " +
-                          "JOIN 440_jmp_courses c ON g.crn = c.crn " +
-                          "JOIN 440_jmp_students s ON g.student_id = s.student_id";
-                    
-                    DisplayGradeRecords(sql: sql);
+                    DisplayGradeRecords();
                 }
                 else if (!string.IsNullOrEmpty(TextBoxRecordsCRN.Text) &&
                          (ComboBoxViewStudent.SelectedItem == null || ComboBoxViewStudent.SelectedItem.ToString() == "All Students"))
-                {
-                    // Filter by CRN only
-                    sql = "SELECT g.crn, c.course_prefix, c.course_num, s.student_id, CONCAT(s.first_name, ' ', s.last_name) AS student_name, g.grade AS student_grade " +
-                          "FROM 440_jmp_grades g " +
-                          "JOIN 440_jmp_courses c ON g.crn = c.crn " +
-                          "JOIN 440_jmp_students s ON g.student_id = s.student_id " +
-                          "WHERE g.crn = @crn";
-
-                          
+                { 
                     crn_filter = TextBoxRecordsCRN.Text;
-                    DisplayGradeRecords(sql: sql, crn_filter: crn_filter);
+                    DisplayGradeRecords(crn_filter: crn_filter);
                 }
                 else if (string.IsNullOrEmpty(TextBoxRecordsCRN.Text) &&
                          ComboBoxViewStudent.SelectedItem != null && ComboBoxViewStudent.SelectedItem.ToString() != "All Students")
                 {
-                    // Filter by student name only
-                    sql = "SELECT g.crn, c.course_prefix, c.course_num, s.student_id, CONCAT(s.first_name, ' ', s.last_name) AS student_name, g.grade AS student_grade " +
-                          "FROM 440_jmp_grades g " +
-                          "JOIN 440_jmp_courses c ON g.crn = c.crn " +
-                          "JOIN 440_jmp_students s ON g.student_id = s.student_id " +
-                          "WHERE CONCAT(s.first_name, ' ', s.last_name) = @student_name";
-
                     student_name_filter = ComboBoxViewStudent.SelectedItem.ToString();
-                    DisplayGradeRecords(sql: sql, student_name_filter: student_name_filter);
+                    DisplayGradeRecords(student_name_filter: student_name_filter);
                 }
                 else
-                {
-                    // Filter by both CRN and student name
-                    sql = "SELECT g.crn, c.course_prefix, c.course_num, s.student_id, CONCAT(s.first_name, ' ', s.last_name) AS student_name, g.grade AS student_grade " +
-                          "FROM 440_jmp_grades g " +
-                          "JOIN 440_jmp_courses c ON g.crn = c.crn " +
-                          "JOIN 440_jmp_students s ON g.student_id = s.student_id " +
-                          "WHERE g.crn = @crn AND CONCAT(s.first_name, ' ', s.last_name) = @student_name";
-
-                          
+                {  
                     crn_filter = TextBoxRecordsCRN.Text;
                     student_name_filter = ComboBoxViewStudent.SelectedItem.ToString();
-                    DisplayGradeRecords(sql: sql, crn_filter: crn_filter, student_name_filter: student_name_filter);
+                    DisplayGradeRecords(crn_filter: crn_filter, student_name_filter: student_name_filter);
                 }
 
             }
@@ -233,7 +284,18 @@ namespace CSC440Project
                 EditRecord editRecord = new EditRecord();
                 editRecord.setValues(crn, studentId, studentName, grade);
                 editRecord.ShowDialog();
-                DisplayGradeRecords();
+                if (!string.IsNullOrEmpty(TextBoxRecordsCRN.Text) && ComboBoxViewStudent.SelectedItem != null) {
+                    DisplayGradeRecords(crn_filter: TextBoxRecordsCRN.Text, student_name_filter: ComboBoxViewStudent.SelectedItem.ToString());
+                }
+                else if (!string.IsNullOrEmpty(TextBoxRecordsCRN.Text) && ComboBoxViewStudent.SelectedItem == null) {
+                    DisplayGradeRecords(crn_filter: TextBoxRecordsCRN.Text);
+                }
+                else if (string.IsNullOrEmpty(TextBoxRecordsCRN.Text) && ComboBoxViewStudent.SelectedItem != null) {
+                    DisplayGradeRecords(student_name_filter: ComboBoxViewStudent.SelectedItem.ToString());
+                }
+                else {
+                    DisplayGradeRecords();
+                }
             }
             else if (e.ColumnIndex == dataGridView1.Columns["DeleteRow"].Index && e.RowIndex >= 0)
             {
@@ -250,7 +312,18 @@ namespace CSC440Project
 
                     Grade delete_grade = new Grade(conn_string);
                     delete_grade.deleteGrade(studentId, crn);
-                    DisplayGradeRecords();
+                    if (!string.IsNullOrEmpty(TextBoxRecordsCRN.Text) && ComboBoxViewStudent.SelectedItem != null) {
+                        DisplayGradeRecords(crn_filter: TextBoxRecordsCRN.Text, student_name_filter: ComboBoxViewStudent.SelectedItem.ToString());
+                    }
+                    else if (!string.IsNullOrEmpty(TextBoxRecordsCRN.Text) && ComboBoxViewStudent.SelectedItem == null) {
+                        DisplayGradeRecords(crn_filter: TextBoxRecordsCRN.Text);
+                    }
+                    else if (string.IsNullOrEmpty(TextBoxRecordsCRN.Text) && ComboBoxViewStudent.SelectedItem != null) {
+                        DisplayGradeRecords(student_name_filter: ComboBoxViewStudent.SelectedItem.ToString());
+                    }
+                    else {
+                        DisplayGradeRecords();
+                    }
                 }
 
 

@@ -21,7 +21,7 @@ namespace CSC440Project
             this.conn_string = conn_string?? string.Empty;
         }
 
-        public void insertGrade(int grade, int student_id, int crn)
+        public void insertGrade(string grade, int student_id, int crn)
         {
             Console.WriteLine("Adding grade to database...");
             Console.WriteLine("Creating SQL Connection");
