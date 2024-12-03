@@ -153,73 +153,84 @@ namespace CSC440Project
                                     {
                                         Console.WriteLine($"Failed crn query: {crnEx.Message}");
                                     }
-                                    // loop through each row and read data
-                                    for (int row = 2; row <= rowCount; row++)
-                                    {
-                                        string name = worksheet.Cells[row, 1].Text;
-                                        int id = int.Parse(worksheet.Cells[row, 2].Text);
-                                        string grade = worksheet.Cells[row, 3].Text;
-
-                                        importedGrades.Rows.Add(name, id, grade);
-
-                                        // confirm student exists in db
-                                        try
+                                    if (crn != -1) {   
+                                        // loop through each row and read data
+                                        for (int row = 2; row <= rowCount; row++)
                                         {
-                                            string studSql = "SELECT * FROM 440_jmp_students WHERE student_id=@student_id";
-                                            MySqlCommand studCmd = new(studSql, conn);
+                                            string name = worksheet.Cells[row, 1].Text;
+                                            int id = int.Parse(worksheet.Cells[row, 2].Text);
+                                            string grade = worksheet.Cells[row, 3].Text;
 
-                                            studCmd.Parameters.AddWithValue("@student_id", id);
+                                            importedGrades.Rows.Add(name, id, grade);
 
-                                            using MySqlDataReader myReader = studCmd.ExecuteReader();
-
-                                            // if student id exists, confirm matches name
-                                            if (myReader.Read())
+                                            // confirm student exists in db
+                                            try
                                             {
-                                                string firstName = myReader["first_name"]?.ToString() ?? string.Empty;
-                                                string lastName = myReader["last_name"]?.ToString() ?? string.Empty;
+                                                string studSql = "SELECT * FROM 440_jmp_students WHERE student_id=@student_id";
+                                                MySqlCommand studCmd = new(studSql, conn);
 
-                                                // if name matches, insert grade
-                                                if (name == firstName + " " + lastName && crn != -1)
+                                                studCmd.Parameters.AddWithValue("@student_id", id);
+
+                                                using MySqlDataReader myReader = studCmd.ExecuteReader();
+
+                                                // if student id exists, confirm matches name
+                                                if (myReader.Read())
                                                 {
-                                                    myReader.Close();
-                                                    try
+                                                    string firstName = myReader["first_name"]?.ToString() ?? string.Empty;
+                                                    string lastName = myReader["last_name"]?.ToString() ?? string.Empty;
+
+                                                    // if name matches, insert grade
+                                                    if (name == firstName + " " + lastName && crn != -1)
                                                     {
-                                                        string insertSql = "INSERT INTO 440_jmp_grades (grade, student_id, crn) VALUES (@grade, @student_id, @crn)";
-                                                        MySqlCommand insertCmd = new(insertSql, conn);
+                                                        myReader.Close();
+                                                        try
+                                                        {
+                                                            string insertSql = "INSERT INTO 440_jmp_grades (grade, student_id, crn) VALUES (@grade, @student_id, @crn)";
+                                                            MySqlCommand insertCmd = new(insertSql, conn);
 
-                                                        insertCmd.Parameters.AddWithValue("@grade", grade);
-                                                        insertCmd.Parameters.AddWithValue("@student_id", id);
-                                                        insertCmd.Parameters.AddWithValue("@crn", crn);
+                                                            insertCmd.Parameters.AddWithValue("@grade", grade);
+                                                            insertCmd.Parameters.AddWithValue("@student_id", id);
+                                                            insertCmd.Parameters.AddWithValue("@crn", crn);
 
-                                                        insertCmd.ExecuteNonQuery();
-                                                        Console.WriteLine("Insert Success!");
-                                                        MessageBox.Show("Insert Success!");
+                                                            insertCmd.ExecuteNonQuery();
+                                                            Console.WriteLine("Insert Success!");
+                                                            MessageBox.Show("Insert Success!");
 
+                                                        }
+                                                        catch (Exception insertEx)
+                                                        {
+                                                            Console.WriteLine($"Insert for student {id} failed: {insertEx.Message}");
+                                                            MessageBox.Show($"Insert for student {id} failed: {insertEx.Message}",
+                                                                            $"Error while processing course {coursePrefix} {courseNum} {year} {semester}");
+                                                        }
                                                     }
-                                                    catch (Exception insertEx)
+                                                    else
                                                     {
-                                                        Console.WriteLine($"Insert for student {id} failed: {insertEx.Message}");
-                                                        MessageBox.Show($"Insert for student {id} failed: {insertEx.Message}");
+                                                        Console.WriteLine($"Student name: {name} does not match {id} on record!");
+                                                        MessageBox.Show($"Student name: {name} does not match {id} on record!", 
+                                                                        $"Error while processing course {coursePrefix} {courseNum} {year} {semester}");
                                                     }
                                                 }
                                                 else
                                                 {
-                                                    Console.WriteLine($"Student name: {name} does not match {id} on record!");
-                                                    MessageBox.Show($"Student name: {name} does not match {id} on record!");
+                                                    Console.WriteLine($"Student ID: {id} does not exist!");
+                                                    MessageBox.Show($"Student ID: {id} does not exist!", 
+                                                                    $"Error while processing course {coursePrefix} {courseNum} {year} {semester}");
                                                 }
-                                            }
-                                            else
-                                            {
-                                                Console.WriteLine($"Student ID: {id} does not exist!");
-                                                MessageBox.Show($"Student ID: {id} does not exist!");
-                                            }
 
+                                            }
+                                            catch (Exception studEx)
+                                            {
+                                                Console.WriteLine($"Failed student query: {studEx.Message}");
+                                                MessageBox.Show($"Failed student query: {studEx.Message}", 
+                                                                $"Error while processing course {coursePrefix} {courseNum} {year} {semester}");
+                                            }
                                         }
-                                        catch (Exception studEx)
-                                        {
-                                            Console.WriteLine($"Failed student query: {studEx.Message}");
-                                            MessageBox.Show($"Failed student query: {studEx.Message}");
-                                        }
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine($"The course {coursePrefix} {courseNum} {year} {semester} was not found in the database!");
+                                        MessageBox.Show($"The course {coursePrefix} {courseNum} {year} {semester} was not found in the database!");
                                     }
                                     conn.Close();
                                 }
@@ -233,17 +244,20 @@ namespace CSC440Project
                             else
                             {
                                 Console.WriteLine($"Skipping file with unexpected format: {fileName}");
+                                MessageBox.Show($"Skipping file with unexpected format: {fileName}", $"Error while processing directory {folderName}");
                             }
                         }
                     }
                     else
                     {
                         Console.WriteLine($"Skipping folder with unexpected format: {folderName}");
+                        MessageBox.Show($"Skipping folder with unexpected format: {folderName}");
                     }
                 }
                 else
                 {
                     Console.WriteLine($"Skipping unrelated folder: {folderName}");
+                    MessageBox.Show($"Skipping unrelated folder: {folderName}");
                 }
             }
         }
