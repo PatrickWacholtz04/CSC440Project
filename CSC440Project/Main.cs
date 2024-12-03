@@ -177,7 +177,7 @@ namespace CSC440Project
                           
                     cmd = new(sql, mySqlConnection);
                     cmd.Parameters.AddWithValue("@crn", crn_filter);
-                    cmd.Parameters.AddWithValue("@student_name_filter", student_name_filter);
+                    cmd.Parameters.AddWithValue("@student_name", student_name_filter);
                 }
 
 
