@@ -77,16 +77,30 @@ namespace CSC440Project
 
         // -----------------------------------------------------
 
-        // --------------- Use Case 3+4: Util ---------------
-        private void ButtonViewRecords_Click(object sender, EventArgs e)
-        {
-            MySqlConnection mySqlConnection = new MySqlConnection(conn_string);
+        // function to display grade records in dataGridView
+        private void DisplayGradeRecords(
+            string sql = "SELECT g.crn, c.course_prefix, c.course_num, s.student_id, CONCAT(s.first_name, ' ', s.last_name) AS student_name, g.grade AS student_grade FROM 440_jmp_grades g JOIN 440_jmp_courses c ON g.crn = c.crn JOIN 440_jmp_students s ON g.student_id = s.student_id;",
+            string? crn_filter = null,
+            string? student_name_filter = null
+            ) {
 
+            MySqlConnection mySqlConnection = new(conn_string);
             try
             {
                 mySqlConnection.Open();
-                string sql = "SELECT g.crn, c.course_prefix, c.course_num, s.student_id, CONCAT(s.first_name, ' ', s.last_name) AS student_name, g.grade AS student_grade FROM 440_jmp_grades g JOIN 440_jmp_courses c ON g.crn = c.crn JOIN 440_jmp_students s ON g.student_id = s.student_id;";
-                MySqlCommand cmd = new MySqlCommand(sql, mySqlConnection);
+                MySqlCommand cmd = new(sql, mySqlConnection);
+
+                // Add parameters dynamically based on the inputs
+                if (crn_filter != null)
+                {
+                    cmd.Parameters.AddWithValue("@crn", crn_filter);
+                }
+                if (student_name_filter != null)
+                {
+                    cmd.Parameters.AddWithValue("@student_name", student_name_filter);
+                }
+
+
                 MySqlDataReader reader = cmd.ExecuteReader();
 
                 // clear datagridview
@@ -113,9 +127,12 @@ namespace CSC440Project
             {
                 mySqlConnection.Close();
             }
+        }
 
-            
-
+        // --------------- Use Case 3+4: Util ---------------
+        private void ButtonViewRecords_Click(object sender, EventArgs e)
+        {
+            DisplayGradeRecords();
             this.PanelAddGrade.Visible = false;
             this.PanelRecords.Visible = true;
         }
@@ -128,6 +145,7 @@ namespace CSC440Project
             {
                 mySqlConnection.Open();
                 string sql;
+                string? crn_filter, student_name_filter;
 
                 // Build the SQL query dynamically based on the inputs
                 if (string.IsNullOrEmpty(TextBoxRecordsCRN.Text) &&
@@ -138,6 +156,8 @@ namespace CSC440Project
                           "FROM 440_jmp_grades g " +
                           "JOIN 440_jmp_courses c ON g.crn = c.crn " +
                           "JOIN 440_jmp_students s ON g.student_id = s.student_id";
+                    
+                    DisplayGradeRecords(sql: sql);
                 }
                 else if (!string.IsNullOrEmpty(TextBoxRecordsCRN.Text) &&
                          (ComboBoxViewStudent.SelectedItem == null || ComboBoxViewStudent.SelectedItem.ToString() == "All Students"))
@@ -148,6 +168,10 @@ namespace CSC440Project
                           "JOIN 440_jmp_courses c ON g.crn = c.crn " +
                           "JOIN 440_jmp_students s ON g.student_id = s.student_id " +
                           "WHERE g.crn = @crn";
+
+                          
+                    crn_filter = TextBoxRecordsCRN.Text;
+                    DisplayGradeRecords(sql: sql, crn_filter: crn_filter);
                 }
                 else if (string.IsNullOrEmpty(TextBoxRecordsCRN.Text) &&
                          ComboBoxViewStudent.SelectedItem != null && ComboBoxViewStudent.SelectedItem.ToString() != "All Students")
@@ -158,6 +182,9 @@ namespace CSC440Project
                           "JOIN 440_jmp_courses c ON g.crn = c.crn " +
                           "JOIN 440_jmp_students s ON g.student_id = s.student_id " +
                           "WHERE CONCAT(s.first_name, ' ', s.last_name) = @student_name";
+
+                    student_name_filter = ComboBoxViewStudent.SelectedItem.ToString();
+                    DisplayGradeRecords(sql: sql, student_name_filter: student_name_filter);
                 }
                 else
                 {
@@ -167,37 +194,13 @@ namespace CSC440Project
                           "JOIN 440_jmp_courses c ON g.crn = c.crn " +
                           "JOIN 440_jmp_students s ON g.student_id = s.student_id " +
                           "WHERE g.crn = @crn AND CONCAT(s.first_name, ' ', s.last_name) = @student_name";
+
+                          
+                    crn_filter = TextBoxRecordsCRN.Text;
+                    student_name_filter = ComboBoxViewStudent.SelectedItem.ToString();
+                    DisplayGradeRecords(sql: sql, crn_filter: crn_filter, student_name_filter: student_name_filter);
                 }
 
-                MySqlCommand cmd = new MySqlCommand(sql, mySqlConnection);
-
-                // Add parameters dynamically based on the inputs
-                if (!string.IsNullOrEmpty(TextBoxRecordsCRN.Text))
-                {
-                    cmd.Parameters.AddWithValue("@crn", TextBoxRecordsCRN.Text);
-                }
-
-                if (ComboBoxViewStudent.SelectedItem != null && ComboBoxViewStudent.SelectedItem.ToString() != "All Students")
-                {
-                    cmd.Parameters.AddWithValue("@student_name", ComboBoxViewStudent.SelectedItem.ToString());
-                }
-
-                MySqlDataReader reader = cmd.ExecuteReader();
-
-                // Clear the DataGridView
-                dataGridView1.Rows.Clear();
-
-                while (reader.Read())
-                {
-                    int crn = reader.GetInt32(0);
-                    string course_prefix = reader.GetString(1);
-                    int course_num = reader.GetInt32(2);
-                    int student_id = reader.GetInt32(3);
-                    string student_name = reader.GetString(4);
-                    string student_grade = reader.GetString(5);
-
-                    dataGridView1.Rows.Add(crn, course_prefix, course_num, student_id, student_name, student_grade, "Edit", "Delete");
-                }
             }
             catch (Exception ex)
             {
@@ -230,6 +233,7 @@ namespace CSC440Project
                 EditRecord editRecord = new EditRecord();
                 editRecord.setValues(crn, studentId, studentName, grade);
                 editRecord.ShowDialog();
+                DisplayGradeRecords();
             }
             else if (e.ColumnIndex == dataGridView1.Columns["DeleteRow"].Index && e.RowIndex >= 0)
             {
@@ -246,6 +250,7 @@ namespace CSC440Project
 
                     Grade delete_grade = new Grade(conn_string);
                     delete_grade.deleteGrade(studentId, crn);
+                    DisplayGradeRecords();
                 }
 
 
