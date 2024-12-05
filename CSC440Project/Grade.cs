@@ -23,8 +23,8 @@ namespace CSC440Project
 
         public void insertGrade(string grade, int student_id, int crn)
         {
-            Console.WriteLine("Adding grade to database...");
-            Console.WriteLine("Creating SQL Connection");
+            //Console.WriteLine("Adding grade to database...");
+            //Console.WriteLine("Creating SQL Connection");
 
             // Create sql connection
             MySqlConnection conn = new MySqlConnection(this.conn_string);
@@ -32,7 +32,7 @@ namespace CSC440Project
 
             try
             {
-                Console.WriteLine("Connecting to MySQL...");
+                //Console.WriteLine("Connecting to MySQL...");
 
                 // Check if the grade already exists for this student and class
                 string checkQuery = "SELECT COUNT(*) FROM 440_jmp_grades WHERE student_id = @student_id AND crn = @crn";
@@ -45,7 +45,7 @@ namespace CSC440Project
                 // If the record exists, dont add the grade
                 if (recordCount > 0)
                 {
-                    MessageBox.Show("A record already exists for this Student.", "Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("A record already exists for this Student.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 else
                 {
@@ -71,12 +71,11 @@ namespace CSC440Project
                 conn.Close();
             }
 
-            Console.WriteLine("Finished. Exiting `insertGrade()`");
+            //Console.WriteLine("Finished. Exiting `insertGrade()`");
         }
 
         public void ImportGrades(string parentDirectory)
         {
-            //string filePath = "test.xlsx";
 
             string[] directories = Directory.GetDirectories(parentDirectory);
 
@@ -95,7 +94,7 @@ namespace CSC440Project
                         string year = folderParts[1];
                         string semester = folderParts[2];
 
-                        Console.WriteLine($"Processing folder: {folderName}");
+                        //Console.WriteLine($"Processing folder: {folderName}");
 
                         // read grade files in folder
                         string[] files = Directory.GetFiles(dirPath);
@@ -146,7 +145,7 @@ namespace CSC440Project
                                         if (myReader.Read())
                                         {
                                             crn = Convert.ToInt32(myReader["crn"]);
-                                            Console.WriteLine($"CRN: {crn}");
+                                            Console.WriteLine($"Adding grades for CRN: {crn}");
                                         }
                                     }
                                     catch (Exception crnEx)
@@ -193,15 +192,14 @@ namespace CSC440Project
                                                             insertCmd.Parameters.AddWithValue("@crn", crn);
 
                                                             insertCmd.ExecuteNonQuery();
-                                                            Console.WriteLine("Insert Success!");
-                                                            MessageBox.Show("Insert Success!");
+                                                            Console.WriteLine("Grade inserted for CRN: " + crn + " for student ID: " + id);
+                                                            //MessageBox.Show("Insert Success!");
 
                                                         }
                                                         catch (Exception insertEx)
                                                         {
-                                                            Console.WriteLine($"Insert for student {id} failed: {insertEx.Message}");
-                                                            MessageBox.Show($"Insert for student {id} failed: {insertEx.Message}",
-                                                                            $"Error while processing course {coursePrefix} {courseNum} {year} {semester}");
+                                                            //Console.WriteLine($"Insert for student {id} failed: {insertEx.Message}");
+                                                            //MessageBox.Show($"Insert for student {id} failed: {insertEx.Message}", $"Error while processing course {coursePrefix} {courseNum} {year} {semester}");
                                                         }
                                                     }
                                                     else
@@ -230,13 +228,12 @@ namespace CSC440Project
                                     else
                                     {
                                         Console.WriteLine($"The course {coursePrefix} {courseNum} {year} {semester} was not found in the database!");
-                                        MessageBox.Show($"The course {coursePrefix} {courseNum} {year} {semester} was not found in the database!");
+                                        //MessageBox.Show($"The course {coursePrefix} {courseNum} {year} {semester} was not found in the database!");
                                     }
                                     conn.Close();
                                 }
                                 catch (Exception dbEx)
                                 {
-                                    //
                                     Console.WriteLine($"Database Connection error: {dbEx.Message}");
                                 }
 
@@ -244,22 +241,24 @@ namespace CSC440Project
                             else
                             {
                                 Console.WriteLine($"Skipping file with unexpected format: {fileName}");
-                                MessageBox.Show($"Skipping file with unexpected format: {fileName}", $"Error while processing directory {folderName}");
+                                //MessageBox.Show($"Skipping file with unexpected format: {fileName}", $"Error while processing directory {folderName}");
                             }
                         }
                     }
                     else
                     {
                         Console.WriteLine($"Skipping folder with unexpected format: {folderName}");
-                        MessageBox.Show($"Skipping folder with unexpected format: {folderName}");
+                        //MessageBox.Show($"Skipping folder with unexpected format: {folderName}");
                     }
                 }
                 else
                 {
                     Console.WriteLine($"Skipping unrelated folder: {folderName}");
-                    MessageBox.Show($"Skipping unrelated folder: {folderName}");
+                    //MessageBox.Show($"Skipping unrelated folder: {folderName}");
                 }
             }
+
+            MessageBox.Show("Confirmation: Finished adding new grades", "Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
 
