@@ -100,7 +100,7 @@ namespace CSC440Project
                     }
                     myReader.Close();
 
-                    string transcriptSql = "SELECT course_prefix, course_num, semester, year, hours, grade FROM 440_jmp_courses INNER JOIN 440_jmp_grades on 440_jmp_courses.crn = 440_jmp_grades.crn WHERE 440_jmp_grades.student_id=@student_id";
+                    string transcriptSql = "SELECT course_prefix, course_num, semester, year, hours, grade FROM 440_jmp_courses INNER JOIN 440_jmp_grades on 440_jmp_courses.crn = 440_jmp_grades.crn WHERE 440_jmp_grades.student_id=@student_id ORDER BY year, semester";
                     MySqlCommand transcriptCmd = new(transcriptSql, conn);
 
                     transcriptCmd.Parameters.AddWithValue("@student_id", studentId);
@@ -117,7 +117,7 @@ namespace CSC440Project
 
                     // Add table for grades
                     PdfPTable table = new PdfPTable(6); // 6 columns
-                    table.WidthPercentage = 100;
+                    table.WidthPercentage = 110;
 
                     // Add table header
                     table.AddCell(new PdfPCell(new Phrase("Course Prefix", titleFont)) { HorizontalAlignment = Element.ALIGN_CENTER });
