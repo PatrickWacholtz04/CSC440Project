@@ -143,7 +143,6 @@ namespace CSC440Project
                 }
                 catch (Exception dbEx)
                 {
-                    //
                     Console.WriteLine($"Database Connection error: {dbEx.Message}");
                 }
                 // Add footer
@@ -159,7 +158,9 @@ namespace CSC440Project
                 // Close the document
                 pdfDoc.Close();
             }
-            MessageBox.Show("Transcript PDF created at: " + filePath);
+            //MessageBox.Show("Transcript PDF created at: " + filePath);
+            Process.Start(new ProcessStartInfo { FileName = filePath, UseShellExecute = true });
+
         }
 
     }

@@ -28,7 +28,14 @@ namespace CSC440Project
         {
             string student_id = TextBoxStudentID.Text;
 
-            int student_id_int = Convert.ToInt32(student_id);
+            int student_id_int;
+
+            if (!int.TryParse(student_id, out student_id_int))
+            {
+                MessageBox.Show("Student ID Must be a number", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
 
             Student print_transcript = new Student(conn_string);
             print_transcript.PrintTranscript(student_id_int);
