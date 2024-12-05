@@ -294,21 +294,26 @@ namespace CSC440Project
                 EditRecord editRecord = new EditRecord();
                 editRecord.setValues(crn, studentId, studentName, grade);
                 editRecord.ShowDialog();
-                if (!string.IsNullOrEmpty(TextBoxRecordsCRN.Text) && ComboBoxViewStudent.SelectedItem != null)
+                // Build the SQL query dynamically based on the inputs
+                if (string.IsNullOrEmpty(TextBoxRecordsCRN.Text) &&
+                    (ComboBoxViewStudent.SelectedItem == null || ComboBoxViewStudent.SelectedItem.ToString() == "All Students"))
                 {
-                    DisplayGradeRecords(crn_filter: TextBoxRecordsCRN.Text, student_name_filter: ComboBoxViewStudent.SelectedItem.ToString());
+                    // No filters: fetch all records
+                    DisplayGradeRecords();
                 }
-                else if (!string.IsNullOrEmpty(TextBoxRecordsCRN.Text) && ComboBoxViewStudent.SelectedItem == null)
+                else if (!string.IsNullOrEmpty(TextBoxRecordsCRN.Text) &&
+                         (ComboBoxViewStudent.SelectedItem == null || ComboBoxViewStudent.SelectedItem.ToString() == "All Students"))
                 {
                     DisplayGradeRecords(crn_filter: TextBoxRecordsCRN.Text);
                 }
-                else if (string.IsNullOrEmpty(TextBoxRecordsCRN.Text) && ComboBoxViewStudent.SelectedItem != null)
+                else if (string.IsNullOrEmpty(TextBoxRecordsCRN.Text) &&
+                         ComboBoxViewStudent.SelectedItem != null && ComboBoxViewStudent.SelectedItem.ToString() != "All Students")
                 {
                     DisplayGradeRecords(student_name_filter: ComboBoxViewStudent.SelectedItem.ToString());
                 }
                 else
                 {
-                    DisplayGradeRecords();
+                    DisplayGradeRecords(crn_filter: TextBoxRecordsCRN.Text, student_name_filter: ComboBoxViewStudent.SelectedItem.ToString());
                 }
             }
             else if (e.ColumnIndex == dataGridView1.Columns["DeleteRow"].Index && e.RowIndex >= 0)
@@ -326,21 +331,26 @@ namespace CSC440Project
 
                     Grade delete_grade = new Grade(conn_string);
                     delete_grade.deleteGrade(studentId, crn);
-                    if (!string.IsNullOrEmpty(TextBoxRecordsCRN.Text) && ComboBoxViewStudent.SelectedItem != null)
+                    // Build the SQL query dynamically based on the inputs
+                    if (string.IsNullOrEmpty(TextBoxRecordsCRN.Text) &&
+                        (ComboBoxViewStudent.SelectedItem == null || ComboBoxViewStudent.SelectedItem.ToString() == "All Students"))
                     {
-                        DisplayGradeRecords(crn_filter: TextBoxRecordsCRN.Text, student_name_filter: ComboBoxViewStudent.SelectedItem.ToString());
+                        // No filters: fetch all records
+                        DisplayGradeRecords();
                     }
-                    else if (!string.IsNullOrEmpty(TextBoxRecordsCRN.Text) && ComboBoxViewStudent.SelectedItem == null)
+                    else if (!string.IsNullOrEmpty(TextBoxRecordsCRN.Text) &&
+                            (ComboBoxViewStudent.SelectedItem == null || ComboBoxViewStudent.SelectedItem.ToString() == "All Students"))
                     {
                         DisplayGradeRecords(crn_filter: TextBoxRecordsCRN.Text);
                     }
-                    else if (string.IsNullOrEmpty(TextBoxRecordsCRN.Text) && ComboBoxViewStudent.SelectedItem != null)
+                    else if (string.IsNullOrEmpty(TextBoxRecordsCRN.Text) &&
+                            ComboBoxViewStudent.SelectedItem != null && ComboBoxViewStudent.SelectedItem.ToString() != "All Students")
                     {
                         DisplayGradeRecords(student_name_filter: ComboBoxViewStudent.SelectedItem.ToString());
                     }
                     else
                     {
-                        DisplayGradeRecords();
+                        DisplayGradeRecords(crn_filter: TextBoxRecordsCRN.Text, student_name_filter: ComboBoxViewStudent.SelectedItem.ToString());
                     }
                 }
 
